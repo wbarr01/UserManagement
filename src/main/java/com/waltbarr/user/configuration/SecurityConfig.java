@@ -1,8 +1,6 @@
 package com.waltbarr.user.configuration;
 
-import com.waltbarr.user.repository.UserRepository;
 import com.waltbarr.user.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,11 +12,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
 
-
-//    @Autowired
-//    public SecurityConfig(UUIDTokenFilter uuidTokenFilter){
-//        this.uuidTokenFilter = uuidTokenFilter;
-//    }
 
     @Bean
     public UUIDTokenFilter uuidTokenFilter(UserService userService){

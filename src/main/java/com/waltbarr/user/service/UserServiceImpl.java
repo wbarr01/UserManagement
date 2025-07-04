@@ -64,13 +64,23 @@ public class UserServiceImpl implements UserService{
      *
      */
     @Override
-    public UserResponseDTO findByToken(String token) {
+    public Optional<UserResponseDTO> findByToken(String token) {
         Optional<User> optUser=userRepository.findByToken(token);
         if(optUser.isPresent()){
             User user=optUser.get();
-            return UserResponseDTO.childBuilder().email(user.getEmail()).tokenExpiration(user.getTokenExpiration()).build();
+            return Optional.of(UserResponseDTO.childBuilder().email(user.getEmail()).tokenExpiration(user.getTokenExpiration()).build());
         }
-        return null;
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<UserResponseDTO> searchUserInfoByEmail(String email) {
+        Optional<User> optUser=userRepository.findByEmail(email);
+        if(optUser.isPresent()){
+            User user=optUser.get();
+            return Optional.of(UserResponseDTO.childBuilder().name(user.getName()).email(user.getEmail()).isActive(user.isActive()).build());
+        }
+        return Optional.empty();
     }
 
     /**
