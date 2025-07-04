@@ -1,13 +1,11 @@
 package com.waltbarr.user.exceptions;
 
 import com.waltbarr.user.DTO.ApiResponse;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,10 +13,14 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<ApiResponse<Object>> handleEmailExists(EmailAlreadyExistsException ex){
         return ResponseEntity.badRequest().body(new ApiResponse<>( ex.getMessage(),null));
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ApiResponse<Object>> handleGeneralRuntime(RuntimeException ex){
+        return ResponseEntity.internalServerError().body(new ApiResponse<>("Internal Server error",null));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

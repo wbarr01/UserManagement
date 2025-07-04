@@ -1,17 +1,19 @@
 package com.waltbarr.user.service;
 
+import com.waltbarr.user.DTO.PhoneDTO;
 import com.waltbarr.user.DTO.UserDTO;
 import com.waltbarr.user.DTO.UserResponseDTO;
+import com.waltbarr.user.entities.Phone;
 import com.waltbarr.user.entities.User;
 import com.waltbarr.user.exceptions.EmailAlreadyExistsException;
 import com.waltbarr.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -27,7 +29,7 @@ public class UserServiceImpl implements UserService{
     }
 
     /**
-     * Create User method
+     * Create a new User,  if email doesn't already exist
      */
     @Override
     public UserResponseDTO createUser(UserDTO userDTO) {
@@ -37,24 +39,50 @@ public class UserServiceImpl implements UserService{
            throw new EmailAlreadyExistsException();
         }
 
-        LocalDateTime now =LocalDateTime.now();
         String passwordEncoded=passwordEncoder.encode(userDTO.getPassword());
-        User newUser = User.builder()
-                .name(userDTO.getName())
-                .email(userDTO.getEmail())
-                .password(passwordEncoded)
-                .created(now)
-                .last_login(now)
-                .isActive(true)
-                .token("")// FALTA TOKEN
-                .build();
+
+        User newUser = convertDTOToUser(userDTO);
+        newUser.setPassword(passwordEncoded);
+        newUser.setToken(UUID.randomUUID().toString());
+        newUser.setTokenExpiration(newUser.getCreated().plusHours(24));
+
         newUser =userRepository.save(newUser);
-        return UserResponseDTO.builder()
+
+        UserResponseDTO userResponseDTO =UserResponseDTO.builder()
                 .id(newUser.getId())
                 .created(newUser.getCreated())
                 .isActive(newUser.isActive())
-                .last_login(newUser.getLast_login())
+                .last_login(newUser.getLastLogin())
                 .token(newUser.getToken()).build();
 
+        return userResponseDTO;
+    }
+
+    /**
+     * Convert a UserDTO to User entity
+     */
+    private User convertDTOToUser(UserDTO userDTO){
+        LocalDateTime now =LocalDateTime.now();
+
+        User newUser = User.builder()
+                .name(userDTO.getName())
+                .email(userDTO.getEmail())
+                .created(now)
+                .lastLogin(now)
+                .isActive(true)
+                .build();
+
+        if (userDTO.getPhones()!= null){
+            for(PhoneDTO phoneDto : userDTO.getPhones()){
+                Phone phone = new Phone();
+                phone.setNumber(phoneDto.getNumber());
+                phone.setCityCode(phoneDto.getCityCode());
+                phone.setCountryCode(phoneDto.getCountryCode());
+                phone.setUser(newUser);
+                newUser.getPhones().add(phone);
+            }
+        }
+
+        return newUser;
     }
 }

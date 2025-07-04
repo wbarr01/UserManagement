@@ -1,9 +1,11 @@
 package com.waltbarr.user.entities;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
 @Table(name ="Phone")
+@Data
 public class Phone {
 
     @Id
@@ -12,4 +14,7 @@ public class Phone {
     private String number;
     private Integer cityCode;
     private Integer countryCode;
+    @ManyToOne
+    @JoinColumn(name = "user_id",nullable = false)
+    private User user;
 }
