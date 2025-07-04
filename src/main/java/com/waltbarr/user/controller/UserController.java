@@ -36,4 +36,5 @@ public class UserController {
         UserResponseDTO user = userService.createUser(userRequest);
         return  new ResponseEntity<>(new ApiResponse<>("User Created", user), HttpStatus.CREATED);
     }
+
 }

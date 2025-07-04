@@ -1,7 +1,9 @@
 package com.waltbarr.user.configuration;
 
+import com.waltbarr.user.DTO.UserResponseDTO;
 import com.waltbarr.user.entities.User;
 import com.waltbarr.user.repository.UserRepository;
+import com.waltbarr.user.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,16 +21,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@Component
+//@Component
 public class UUIDTokenFilter extends OncePerRequestFilter {
 
+    private final UserService userService;
 
-    private UserRepository userRepository;
-
-    @Autowired
-    public UUIDTokenFilter(UserRepository userRepository)
+    //@Autowired
+    public UUIDTokenFilter(UserService userService)
     {
-        this.userRepository = userRepository;
+        this.userService = userService;
     }    /**
      *
      */
@@ -37,9 +38,9 @@ public class UUIDTokenFilter extends OncePerRequestFilter {
         String header = request.getHeader("Authorization");
         if(header != null && header.startsWith("Bearer ")){
             String token = header.substring(7);
-            Optional<User> userOpt = userRepository.findByToken(token);
-            if(userOpt.isPresent() && userOpt.get().getTokenExpiration().isAfter(LocalDateTime.now())){
-                User user = userOpt.get();
+            UserResponseDTO user = userService.findByToken(token);
+            if(user != null && user.getTokenExpiration().isAfter(LocalDateTime.now())){
+
                 Authentication authentication = new UsernamePasswordAuthenticationToken(user,null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }

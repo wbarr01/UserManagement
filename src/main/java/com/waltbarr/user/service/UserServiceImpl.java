@@ -48,14 +48,29 @@ public class UserServiceImpl implements UserService{
 
         newUser =userRepository.save(newUser);
 
-        UserResponseDTO userResponseDTO =UserResponseDTO.builder()
+        UserResponseDTO userResponseDTO =UserResponseDTO.childBuilder()
                 .id(newUser.getId())
                 .created(newUser.getCreated())
+                .modified(newUser.getModified())
                 .isActive(newUser.isActive())
-                .last_login(newUser.getLastLogin())
+                .lastLogin(newUser.getLastLogin())
                 .token(newUser.getToken()).build();
 
         return userResponseDTO;
+    }
+
+    /**
+     *
+     *
+     */
+    @Override
+    public UserResponseDTO findByToken(String token) {
+        Optional<User> optUser=userRepository.findByToken(token);
+        if(optUser.isPresent()){
+            User user=optUser.get();
+            return UserResponseDTO.childBuilder().email(user.getEmail()).tokenExpiration(user.getTokenExpiration()).build();
+        }
+        return null;
     }
 
     /**
@@ -68,6 +83,7 @@ public class UserServiceImpl implements UserService{
                 .name(userDTO.getName())
                 .email(userDTO.getEmail())
                 .created(now)
+                .modified(now)
                 .lastLogin(now)
                 .isActive(true)
                 .build();

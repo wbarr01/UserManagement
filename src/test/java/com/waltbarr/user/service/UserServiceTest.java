@@ -7,9 +7,7 @@ import com.waltbarr.user.exceptions.EmailAlreadyExistsException;
 import com.waltbarr.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -40,7 +38,7 @@ public class UserServiceTest {
 
     @Test
     public void testCreateUserSuccess(){
-        UserDTO userRequest=  UserDTO.builder().name("test").email("test@dominio.cl").password("testPassword").build();
+        UserDTO userRequest=  UserDTO.builder().name("test").email("test@dominio.cl").password("testPassword1!").build();
         when(userRepository.findByEmail(userRequest.getEmail())).thenReturn(Optional.empty());
         User newUser = User.builder()
                 .email(userRequest.getEmail())

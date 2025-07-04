@@ -8,6 +8,8 @@ import jakarta.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 @Builder
 public class UserDTO {
@@ -25,6 +27,5 @@ public class UserDTO {
     @PasswordValidation
     private String password;
 
-    @Builder.Default
     private List<PhoneDTO> phones = new ArrayList<>();
 }
