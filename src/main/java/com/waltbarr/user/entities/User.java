@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.logging.log4j.util.Lazy;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,7 +27,7 @@ public class User {
     @Column(nullable = false, unique=true)
     private String email;
 
-    private String password;//FALTA ENCRIPTARLO
+    private String password;
     private LocalDateTime created;
     private LocalDateTime modified;
 
@@ -42,7 +41,7 @@ public class User {
     private List<Phone> phones = new ArrayList<>();
 
     //salvando token en Tabla User ya que el ejercicio menciona que debe ser guardado junto con el usuario.
-    // Una mejora seria guardarlo en una tabla distinta para Tokens por usuario
+    // Una alternativa seria guardarlo en una tabla distinta para Tokens por usuario
     private String token;
 
     @Column(name = "token_expiration")

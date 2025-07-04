@@ -19,7 +19,7 @@ import java.util.Optional;
 
 public class UUIDTokenFilter extends OncePerRequestFilter {
 
-    private static final List<String> noAuthList= List.of("/api/users/register");
+    private static final List<String> noAuthList= List.of("/api/users/register", "/h2-console","/h2-console/");
 
     private final UserService userService;
 
