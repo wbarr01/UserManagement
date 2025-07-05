@@ -4,19 +4,38 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.waltbarr.user.DTO.UserDTO;
 import com.waltbarr.user.DTO.UserResponseDTO;
 import com.waltbarr.user.configuration.SecurityConfig;
+import com.waltbarr.user.configuration.UUIDTokenFilter;
 import com.waltbarr.user.exceptions.EmailAlreadyExistsException;
 import com.waltbarr.user.service.UserService;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.filter.OncePerRequestFilter;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,13 +43,14 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
-@Import( SecurityConfig.class)
+@Import(TestSecurityConfig.class)
 public class UserControllerTest {
 
     @Autowired
@@ -39,8 +59,24 @@ public class UserControllerTest {
     @MockBean
     private UserService userService;
 
+    private UserResponseDTO userAuthenticated;
+
+
     @BeforeEach
     void init() {
+
+        userAuthenticated = UserResponseDTO.childBuilder().email("test@dominio.cl").tokenExpiration(LocalDateTime.now().plusHours(24)).build();
+        Authentication auth = new UsernamePasswordAuthenticationToken(
+                userAuthenticated, null, List.of(new SimpleGrantedAuthority("ROLE_USER"))
+        );
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(auth);
+        SecurityContextHolder.setContext(context);
+    }
+
+    @AfterEach
+    void clearSecurityContext() {
         SecurityContextHolder.clearContext();
     }
 
@@ -100,15 +136,13 @@ public class UserControllerTest {
         String token = UUID.randomUUID().toString();
         LocalDateTime now = LocalDateTime.now();
 
-        UserResponseDTO user = UserResponseDTO.childBuilder().email("test@dominio.cl").tokenExpiration(now.plusHours(24)).build();
-        UserResponseDTO infoUser = UserResponseDTO.childBuilder().name("Name Test").email(user.getEmail()).build();
+        UserResponseDTO infoUser = UserResponseDTO.childBuilder().name("Name Test").email(userAuthenticated.getEmail()).build();
 
-        when(userService.findByToken(token)).thenReturn(Optional.of(user));
         when(userService.searchUserInfoByEmail(anyString())).thenReturn(Optional.of(infoUser));
 
         mockMvc.perform(get("/api/users/info").contentType(MediaType.APPLICATION_JSON).header("Authorization", "Bearer "+token ))
                  .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.data.email").value(user.getEmail()))
+                    .andExpect(jsonPath("$.data.email").value(userAuthenticated.getEmail()))
                     .andExpect(jsonPath("$.data.name").value(infoUser.getName()));
     }
 }

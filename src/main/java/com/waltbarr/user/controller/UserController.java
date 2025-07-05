@@ -63,6 +63,12 @@ public class UserController {
     @Operation(summary = "Muestra la información del usuario actual", description = "Retorna detalles del usuario en base al UUID token autenticado")
     @GetMapping(value="/info",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<UserResponseDTO>> searchCurrentUserInfo(Authentication auth) {
+
+        if (auth == null || auth.getPrincipal() == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new ApiResponse<>("Unauthorized",null));
+        }
+
         UserResponseDTO currentUser = (UserResponseDTO) auth.getPrincipal();
         Optional<UserResponseDTO> userOpt = userService.searchUserInfoByEmail(currentUser.getEmail());
         if (userOpt.isPresent()){
