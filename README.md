@@ -62,7 +62,6 @@ Los token son retornados despues de registrar un usuario y son requeridos en los
 ---
 ## TODO / Mejoras
 
-- Añadir expiracion y refresh de tokens
 - Utilizar JWT en vez de UUID
 
 ---
