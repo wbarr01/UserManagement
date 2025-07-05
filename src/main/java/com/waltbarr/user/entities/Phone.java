@@ -12,8 +12,8 @@ public class Phone {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String number;
-    private Integer cityCode;
-    private Integer countryCode;
+    private String cityCode;
+    private String countryCode;
     @ManyToOne
     @JoinColumn(name = "user_id",nullable = false)
     private User user;

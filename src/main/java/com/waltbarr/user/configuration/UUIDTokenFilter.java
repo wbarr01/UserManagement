@@ -19,7 +19,12 @@ import java.util.Optional;
 
 public class UUIDTokenFilter extends OncePerRequestFilter {
 
-    private static final List<String> noAuthList= List.of("/api/users/register", "/h2-console","/h2-console/");
+    private static final List<String> noAuthList= List.of("/api/users/register", "/h2-console","/h2-console/","/swagger-ui",
+            "/swagger-ui/",
+            "/swagger-ui/index.html",
+            "/v3/api-docs",
+            "/v3/api-docs/",
+            "/v3/api-docs/swagger-config");
 
     private final UserService userService;
 
@@ -34,21 +39,21 @@ public class UUIDTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         String path = request.getServletPath();
-        if(noAuthList.contains(path)){
+        if(noAuthList.stream().anyMatch(path::startsWith)){
             filterChain.doFilter(request,response);
             return;
         }
 
         String header = request.getHeader("Authorization");
         if(header == null || !header.startsWith("Bearer ")){
-            writeErrorResponse(response,"token inválido o faltante");
+            writeErrorResponse(response,"token invalido o faltante");
             return;
         }
 
         String token = header.substring(7);
         Optional<UserResponseDTO> userOpt = userService.findByToken(token);
         if(userOpt.isEmpty()){
-            writeErrorResponse(response,"token inválido");
+            writeErrorResponse(response,"token invalido");
             return;
         } else if( !userOpt.get().getTokenExpiration().isAfter(LocalDateTime.now())){
 

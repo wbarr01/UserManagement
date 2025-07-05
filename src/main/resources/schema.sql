@@ -14,8 +14,8 @@ CREATE TABLE users (
 CREATE TABLE phones (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     number VARCHAR(20),
-    city_code INTEGER,
-    country_code INTEGER,
+    city_code VARCHAR(5),
+    country_code VARCHAR(5),
     user_id VARCHAR(36),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );

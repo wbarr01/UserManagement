@@ -4,6 +4,11 @@ import com.waltbarr.user.DTO.ApiResponse;
 import com.waltbarr.user.DTO.UserDTO;
 import com.waltbarr.user.DTO.UserResponseDTO;
 import com.waltbarr.user.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +21,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = "Users", description = "User management")
 public class UserController {
 
     /**
@@ -31,6 +37,17 @@ public class UserController {
     /**
      * Create User endpoint
      */
+    @Operation(summary = "Registra un nuevo usuario", description = "Registra un nuevo usuario y retorna un token")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "201",
+                    description = "Usuario creado exitosamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UserResponseDTO.class)
+                    )
+            )
+    })
     @PostMapping(value="/register",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE )
@@ -43,6 +60,7 @@ public class UserController {
     /**
      * Get Current User information, I created it to test the Token Security. Must fail if token is not provided on request
      */
+    @Operation(summary = "Muestra la información del usuario actual", description = "Retorna detalles del usuario en base al UUID token autenticado")
     @GetMapping(value="/info",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<UserResponseDTO>> searchCurrentUserInfo(Authentication auth) {
         UserResponseDTO currentUser = (UserResponseDTO) auth.getPrincipal();

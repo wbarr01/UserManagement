@@ -1,6 +1,7 @@
 package com.waltbarr.user.DTO;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
+@Schema(description = "User response data")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
 public class UserResponseDTO extends UserDTO{
