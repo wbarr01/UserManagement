@@ -50,7 +50,7 @@ Los token son retornados despues de registrar un usuario y son requeridos en los
    * POST /api/users/register 
 4. Copiar el token retornado en la respuesta 
 5. Click en el boton de Authorize y pegar el token: Bearer {your-uuid-token}
-6. Ahora probar los endpoints:
+6. Finalmente probar los endpoints que requieren el token:
     * GET /api/users/info
 ---
 
