@@ -28,7 +28,7 @@
 
 ---
 
-##  Authentication
+##  Autenticacion
 
 La API usa UUID token, debe ser enviada por `Authorization` header:
 
@@ -49,7 +49,7 @@ Los token son retornados despues de registrar un usuario y son requeridos en los
 3. Probar los endpoints desde la UI, primero registrar un usuario
    * POST /api/users/register 
 4. Copiar el token retornado en la respuesta 
-5. Click en el boton de Authorize y pegar el token: Bearer <your-uuid-token>
+5. Click en el boton de Authorize y pegar el token: Bearer {your-uuid-token}
 6. Ahora probar los endpoints:
     * GET /api/users/info
 ---
