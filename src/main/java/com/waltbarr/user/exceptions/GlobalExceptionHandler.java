@@ -14,17 +14,17 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
-    public ResponseEntity<ApiResponse<Object>> handleEmailExists(EmailAlreadyExistsException ex){
+    public ResponseEntity<ApiResponse<String>> handleEmailExists(EmailAlreadyExistsException ex){
         return ResponseEntity.badRequest().body(new ApiResponse<>( ex.getMessage(),null));
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ApiResponse<Object>> handleGeneralRuntime(RuntimeException ex){
+    public ResponseEntity<ApiResponse<String>> handleGeneralRuntime(RuntimeException ex){
         return ResponseEntity.internalServerError().body(new ApiResponse<>("Internal Server error",null));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Map<String,String>>> handleValidationErrors(MethodArgumentNotValidException ex){
+    public ResponseEntity<ApiResponse<String>> handleValidationErrors(MethodArgumentNotValidException ex){
         Map< String, String> errors = new HashMap<>();
         StringBuilder errorMessage= new StringBuilder();
         String separation ="";

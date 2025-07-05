@@ -44,9 +44,12 @@ public class UserController {
                     description = "Usuario creado exitosamente",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = UserResponseDTO.class)
+                            schema = @Schema(implementation = ApiResponse.class)
                     )
-            )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "El correo ya esta registrado ",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class)))
     })
     @PostMapping(value="/register",
             consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -61,12 +64,22 @@ public class UserController {
      * Get Current User information, I created it to test the Token Security. Must fail if token is not provided on request
      */
     @Operation(summary = "Muestra la información del usuario actual", description = "Retorna detalles del usuario en base al UUID token autenticado")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "Informacion del usuario devuelta",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class)
+                    )
+            )
+    })
     @GetMapping(value="/info",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<UserResponseDTO>> searchCurrentUserInfo(Authentication auth) {
 
         if (auth == null || auth.getPrincipal() == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(new ApiResponse<>("Unauthorized",null));
+                    .body(new ApiResponse<>("No autenticado",null));
         }
 
         UserResponseDTO currentUser = (UserResponseDTO) auth.getPrincipal();
