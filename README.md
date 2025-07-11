@@ -44,7 +44,7 @@ Los token son retornados despues de registrar un usuario y son requeridos en los
    ```bash
    mvn spring-boot:run
 
-2. Abrir el browser y dirigirse a: http://localhost:8080/swagger-ui.html
+2. Abrir el browser y dirigirse a: http://localhost:8080/swagger-ui/index.html
 
 3. Probar los endpoints desde la UI, primero registrar un usuario
    * POST /api/users/register 
